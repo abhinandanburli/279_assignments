@@ -49,6 +49,12 @@ int main(int argc, char const *argv[])
         perror("listen");
         exit(EXIT_FAILURE);
     }
+    /*********************************************************************/
+    
+    pid_t child_process = fork();
+    setuid(65534);  /* Setting UID to nobody user's UID  */
+
+    /*********************************************************************/
     if ((new_socket = accept(server_fd, (struct sockaddr *)&address,
                        (socklen_t*)&addrlen))<0)
     {
