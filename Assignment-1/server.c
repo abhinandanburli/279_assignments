@@ -8,6 +8,9 @@
 #include <string.h>
 
 #define PORT 80
+
+int nobody_UID = 65534;
+
 int main(int argc, char const *argv[])
 {
     int server_fd, new_socket, valread;
@@ -27,12 +30,14 @@ int main(int argc, char const *argv[])
     }
 
     // Attaching socket to port 80
-    if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT,
+    
+    if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR,
                                                   &opt, sizeof(opt)))
     {
         perror("setsockopt");
         exit(EXIT_FAILURE);
     }
+
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
     address.sin_port = htons( PORT );
@@ -49,21 +54,32 @@ int main(int argc, char const *argv[])
         perror("listen");
         exit(EXIT_FAILURE);
     }
-    /*********************************************************************/
-    
-    pid_t child_process = fork();
-    setuid(65534);  /* Setting UID to nobody user's UID  */
 
-    /*********************************************************************/
+
+
     if ((new_socket = accept(server_fd, (struct sockaddr *)&address,
                        (socklen_t*)&addrlen))<0)
     {
         perror("accept");
         exit(EXIT_FAILURE);
     }
-    valread = read( new_socket , buffer, 1024);
-    printf("%s\n",buffer );
-    send(new_socket , hello , strlen(hello) , 0 );
-    printf("Hello message sent\n");
-    return 0;
+
+    /*********************************************************************/
+    
+    pid_t child_process = fork();  
+    if(child_process == 0){
+        if(setuid(nobody_UID)==-1){ /* Setting UID to nobody user's UID  */
+            perror("Cannot set UID for child process");
+            exit(EXIT_FAILURE);
+        }
+        printf("child_process UID=%d\n", getuid());
+        valread = read( new_socket , buffer, 1024);
+        printf("%s\n",buffer );
+        send(new_socket , hello , strlen(hello) , 0 );
+        printf("Hello message sent");
+        return 0;
+
+    }
+    /*********************************************************************/
+
 }
