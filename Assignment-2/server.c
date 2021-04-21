@@ -93,8 +93,8 @@ int main(int argc, char const *argv[])
       }
     } /*end of  if(argc == 1)*/
 
-    else
-    {
+  else
+  {
     /************************  Privelege Seperation  **********************/
         printf("Child PID = %d and Parent PID =%d\n",getpid(),getppid()); 
 
@@ -105,13 +105,13 @@ int main(int argc, char const *argv[])
 
         printf("child_process UID=%d\n", getuid());
         sscanf(argv[1], "%d", &new_socket);
-        
+
         valread = read( new_socket , buffer, 1024);
         printf("%s\n",buffer );
         send(new_socket , hello , strlen(hello) , 0 );
         printf("\nHello message sent\n");
         return 0;
-    }
+  }
     /*********************************************************************/
 
 }
