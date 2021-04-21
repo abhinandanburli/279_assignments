@@ -88,16 +88,16 @@ int main(int argc, char const *argv[])
       {
         /*make the parent wait until child exits. Else, the child will be 
           adopted by init process */
-          int status = 0;
-          while ((wait(&status) > 0));
+         int child_status = 0;
+         while ((wait(&child_status) > 0));
       }
-      
     } /*end of  if(argc == 1)*/
 
     else
     {
     /************************  Privelege Seperation  **********************/
         printf("Child PID = %d and Parent PID =%d\n",getpid(),getppid()); 
+
         if(setuid(nobody_UID)==-1){ /* Setting UID to nobody user's UID  */
             perror("Cannot set UID for child process");
             exit(EXIT_FAILURE);
@@ -107,7 +107,7 @@ int main(int argc, char const *argv[])
         valread = read( new_socket , buffer, 1024);
         printf("%s\n",buffer );
         send(new_socket , hello , strlen(hello) , 0 );
-        printf("Hello message sent");
+        printf("\nHello message sent\n");
         return 0;
     }
     /*********************************************************************/
