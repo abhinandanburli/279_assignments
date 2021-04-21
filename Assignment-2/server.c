@@ -102,8 +102,10 @@ int main(int argc, char const *argv[])
             perror("Cannot set UID for child process");
             exit(EXIT_FAILURE);
         }
+
         printf("child_process UID=%d\n", getuid());
         sscanf(argv[1], "%d", &new_socket);
+        
         valread = read( new_socket , buffer, 1024);
         printf("%s\n",buffer );
         send(new_socket , hello , strlen(hello) , 0 );
